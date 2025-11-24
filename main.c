@@ -136,21 +136,37 @@ void add_student(Student students[], int *count, int *last_id){
 void update_student(Student students[], int *count){
 
     int update_id;
+    int student_id = -1;
+
     printf("Please Enter the ID of Student You Would like to edit: ");
     scanf("%d", &update_id);
     clear_input_buffer();
 
+    for (int i = 0; i < *count; i++){
+        if (students[i].id==update_id){
+            student_id = i;
+            break;
+        }
+
+    }
+
+    if(student_id== -1) {
+        printf("There is No Student With this ID Number\n");
+        return;
+    }
+
+
     printf("Enter Student Name: ");
-    fgets(students[update_id].name, MAX_NAME_LEN, stdin);
-    students[update_id].name[strcspn(students[update_id].name, "\n")] = 0;
+    fgets(students[student_id].name, MAX_NAME_LEN, stdin);
+    students[student_id].name[strcspn(students[student_id].name, "\n")] = 0;
 
     printf("Enter Student GPA: ");
-    scanf("%lf", &students[update_id].gpa);
+    scanf("%lf", &students[student_id].gpa);
     clear_input_buffer();
 
     save_to_file(students, *count);
 
-    printf("Student updated successfully. \n");
+    printf("Student updated successfully.\n\n");
 }
 
 void print_all_records(const Student students[], int count){
@@ -174,13 +190,25 @@ void print_all_records(const Student students[], int count){
 void delete_student(Student students[], int *count, int *last_id){
 
     int delete_id;
+    int index = -1;
+
     printf("Please Enter the ID of Student You Would Like to Delete: ");
     scanf("%d", &delete_id);
     clear_input_buffer();
 
-    delete_id--;
+    for (int i = 0; i < *count; i++){
+        if (students[i].id == delete_id){
+            index = i;
+            break;
+        }
+    }
 
-    for (int i = delete_id; i < *count - 1; i++)
+    if (index == -1){
+        printf("There is No Student With This ID Number.\n");
+        return;
+    }
+
+    for (int i = index; i < *count - 1; i++)
     {
         students[i] = students[i + 1];
     }
@@ -188,6 +216,8 @@ void delete_student(Student students[], int *count, int *last_id){
     (*count)--;
     
     save_to_file(students, *count);
+
+    printf("Student Deleted Successfully.\n\n");
 }
 
 void save_to_file(const Student student[], int count){
@@ -206,7 +236,7 @@ void save_to_file(const Student student[], int count){
     }
 
     fclose(file);
-    printf("Successfully save %d record(s) to %s. \n", count, FILENAME);
+    printf("Successfully saved %d record(s) to %s. \n", count, FILENAME);
 }
 
 void load_from_file(Student students[], int *count){
